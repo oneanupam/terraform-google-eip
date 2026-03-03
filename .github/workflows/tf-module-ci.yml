@@ -15,6 +15,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  pull-requests: write
 
 # Define environment variables for Terraform version, working directory, and Cloud SDK version
 env:
