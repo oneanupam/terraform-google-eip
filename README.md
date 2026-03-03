@@ -27,14 +27,14 @@ In order to deploy the VPC using this module, you must activate the Compute Engi
 ## Example Usage
 
 ```bash
-module "example-vpc" {
-  source = "anupam-sy/vpc/google"
+module "example-eip" {
+  source = "oneanupam/eip/google"
 
-  vpc_name                        = "<VPC NAME>"
-  project_id                      = "<PROJECT ID>"
-  routing_mode                    = "GLOBAL"
-  auto_create_subnetworks         = false
-  delete_default_routes_on_create = false
+  project      = var.project_id
+  name         = var.address_name
+  address_type = "EXTERNAL"
+  region       = var.region
+  network_tier = var.network_tier
 }
 ```
 
@@ -49,23 +49,8 @@ Then perform the following commands on the root folder:
 
 ## Testing
 
-Integration testing for terraform modules can be done using available tools. This terraform module uses Kitchen-Terraform. Kitchen-Terraform integrates Test Kitchen with Terraform, enabling you to write tests using InSpec to validate your infrastructure.
+Unit testing and Integration testing for terraform modules can be done using terraform testing framework. This terraform module uses terraform test.
 
-### Tools Requirement
-
-- Kitchen-Terraform: A Test [Kitchen plugin](https://www.rubydoc.info/gems/kitchen-terraform) for Terraform that allows you to test your Terraform configurations.
-- Test Kitchen: An integration tool for developing and testing infrastructure code.
-- InSpec: A [testing framework](https://docs.chef.io/inspec/) used to write tests to verify the state of your infrastructure.
-- Ruby: Kitchen-Terraform and Test Kitchen are Ruby-based, so you’ll need Ruby installed.
-- Bundler: A dependency manager for Ruby projects to manage and install the required [gems](https://rubygems.org/).
-
-### Tests Execution
-
-Run kitchen tests commands as per [Test Kitchen](https://kitchen.ci/) workflow to test the terraform modules to esnure that they are working as expected.
-
-- `bundle exec kitchen create` # Initialises terraform state and
-- `bundle exec kitchen converge` # Creates the required resources
-- `bundle exec kitchen verify` # Tests the created infrastructure
-- `bundle exec kitchen destroy` # Destroys the created infrastructure
-
-- `bundle exec kitchen test` # You can club the complete testing lifecycle commands into a single command.
+```bash
+    `terraform test` # runs the test cases sequentially
+```
