@@ -1,4 +1,4 @@
-# Module block to deploy VPC Network
+# Module block to deploy External IP
 module "default" {
   source = "../.."
 
