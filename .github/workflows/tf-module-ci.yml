@@ -59,3 +59,28 @@ jobs:
           terraform fmt -check -recursive
           terraform validate
           terraform test
+
+  # Release Job
+  release:
+    # By default, jobs run in parallel. This job will only run after the successful completion of the build job.
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository code
+      - name: Code checkout
+        id: code_checkout
+        uses: actions/checkout@v4
+
+      # Create a release using release please action
+      - name: Create Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: googleapis/release-please-action@v4
+        with:
+          # github automatically creates a temporary authentication token (available at secrets.GITHUB_TOKEN) for every workflow run.
+          # It allows your workflow to push commits, create releases, comment on prs etc.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: ${{ github.ref_name }}
+          # optional. customize path to release-please-config.json
+          config-file: release-please-config.json
+          # optional. customize path to .release-please-manifest.json
+          manifest-file: .release-please-manifest.json
