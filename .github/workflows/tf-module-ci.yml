@@ -19,7 +19,6 @@ permissions:
 # Define environment variables for Terraform version, working directory, and Cloud SDK version
 env:
   TERRAFORM_VER: 1.14.0
-  TERRAFORM_DIR: "."
   CLOUDSDK_VER: 548.0.0
 
 jobs:
