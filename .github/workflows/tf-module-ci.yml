@@ -39,3 +39,20 @@ jobs:
         with:
           project_id: 'tidal-outlook-488409-e6'
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+
+      # Install the specified version of Terraform CLI
+      - id: tf_installation
+        name: Terraform Installation
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VER }}
+
+      # Install the specified version of Terraform CLI
+      - name: Verify Terraform Version
+        run: |
+          terraform version
+          terraform fmt -check -recursive
+
+      # Run terraform tests for the module
+      - name: Run Terraform Tests
+        run: terraform test
