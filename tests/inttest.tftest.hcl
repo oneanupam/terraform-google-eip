@@ -12,7 +12,7 @@ run "validate_network_tier" {
   // To pass the variables value to specific run block as it is defined within run block level.
   variables {
     address_name = "my-eip-address"
-    network_tier = "STANDARD"
+    network_tier = "PREMIUM"
   }
 
   assert {
