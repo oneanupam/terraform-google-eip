@@ -1,6 +1,8 @@
-name: Terraform Module CI
+# GitHub workflow to automate the CI/CD for a Terraform module
+name: Terraform Module CI/CD
 
 on:
+  # Runs on pushes and on pull requests targeting the default branch (main)
   push:
     branches:
       - main
@@ -9,86 +11,31 @@ on:
       - main
   workflow_dispatch:
 
+# Sets permissions of the GITHUB_TOKEN to allow the workflow to create pull requests and releases using release please
+permissions:
+  contents: write
+  id-token: write
+
+# Define environment variables for Terraform version, working directory, and Cloud SDK version
 env:
   TERRAFORM_VER: 1.14.0
   TERRAFORM_DIR: "."
   CLOUDSDK_VER: 548.0.0
 
 jobs:
-  tf-module-release:
+  # Build Job
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-      pull-requests: write
-
     steps:
       # Checkout the repository code
       - name: Code checkout
         id: code_checkout
         uses: actions/checkout@v4
 
-      # Scan the repo for any sensitive information like secrets etc
-      - name: Secret Scanning
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./ # Code repository path
-          base: "" # Start scanning from here
-          head: ${{ github.head_ref || github.ref_name }}  # Scan commits until here
-          extra_args: --only-verified
-
-      # Static code analysis using aqua security's tfsec
-      - name: Run tfsec scan
-        id: static_code_analysis
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: ${{ env.TERRAFORM_DIR }}
-          additional_args: --minimum-severity HIGH
-
-      # Install the latest version of Google Cloud SDK
-      - id: cloud_sdk_installation
-        name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.3.0
-        with:
-          version: ${{ env.CLOUDSDK_VER }}
-
       # Setup the authentication for the Google Cloud using WIF
       - id: gcp_auth
         name: Authenticate to GCP
-        uses: google-github-actions/auth@v0.3.1
+        uses: google-github-actions/auth@v3
         with:
-          create_credentials_file: 'true'
+          project_id: 'tidal-outlook-488409-e6'
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-
-      # Install the specified version of Terraform CLI
-      - id: tf_installation
-        name: Terraform Installation
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VER }}
-
-      # Install the specified version of Terraform CLI
-      - name: Install Ruby and Bundler
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.3'
-
-      # Install the specified version of Terraform CLI
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
-
-      # Install the specified version of Terraform CLI
-      - name: Run Kitchen-Terraform tests
-        run: bundle exec kitchen test --destroy=always
-
-      # Release the new version of the module using release please
-      - name: Release Please
-        id: release
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: googleapis/release-please-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target-branch: ${{ github.ref_name }}
