@@ -37,4 +37,5 @@ jobs:
         name: Authenticate to GCP
         uses: google-github-actions/auth@v3
         with:
+          project_id: 'tidal-outlook-488409-e6'
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
