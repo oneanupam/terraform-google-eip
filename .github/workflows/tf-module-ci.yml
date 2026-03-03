@@ -65,9 +65,6 @@ jobs:
     # By default, jobs run in parallel. This job will only run after the successful completion of the build job.
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       # Checkout the repository code
       - name: Code checkout
