@@ -51,8 +51,11 @@ jobs:
       - name: Verify Terraform Version
         run: |
           terraform version
-          terraform fmt -check -recursive
 
       # Run terraform tests for the module
       - name: Run Terraform Tests
-        run: terraform test
+        run: |
+          terraform init
+          terraform fmt -check -recursive
+          terraform validate
+          terraform test
